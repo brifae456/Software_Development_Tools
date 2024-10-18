@@ -1,37 +1,62 @@
-import pandas as pd
+# import libraries
 import streamlit as st
+import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
-# Read the cleaned up data file
-df= pd.read_csv
 
-# Create one st. header with text
-st.title("Vehicles App with Pandas and Plotly")
+# Title of the app centered
+st.title('US Vehicle Advertisement Listings')
 
-# Create at least one Plotly Express histogram using st.write or st.plotly_chart
-# histogram = px.histogram(vehicles, x='price', title='Vehicle Price Distribution')
-# st.write("##Vehicle Price Distribution")
-# st.plotly_chart(histogram)
 
-# Create at least one checkbox using st.checkbox that changes the behavior of any of the above components
-show_odometer = st.checkbox('Show Odometer Distribution')
+# Read data from csv file vehicled_us_clean.csv
+df = pd.read_csv('./vehicles_us_cleaned.csv')
 
-if show_odometer:
-    histogram = px.histogram(df, x='odometer', title='Vehicle Odometer Distribution')
-    st.write("## Vehicle Odometer Distribution")
-else: 
-    histogram = px.histogram(df, x='price', title='Vehicle Price Distribution')
-    st.write("## Vehicle Price Distribution")
-   
-st.plotly_chart(histogram)
+# Show data in the app
+st.write(df)
 
-if show_odometer:
-    st.write("The histogram is designed to visualize the distribution of vehicle odometer readings(mileage) in the dataset. This provides insights into how mileage varies across listed vehicles, helping users understand patterns like typical mileage range or whether a vehicle has high or low mileage.")
-else: 
-    st.write("The Vehicle Price histogram provides insights into how vehicles prices are spread, helping users understand key trends such as, most common price ranges for vehicles, whether their selection contains more expensive or affordable vehicles as it pertains to their own budget, or determining the pricing strategy of vehicles based on market trends. Understanding which price points are most common helps identify where the demand or supply of vehicles lies. Users looking to sell vehicles can use this data to competitively price their vehicles. Buyers can use the data to quickly spot potential bargains.")
+# histogram of the types of vehicles by manufacturer
+st.subheader('Histogram of the types of vehicles by manufacturer')
+fig = px.histogram(df, x='manufacturer', color='type')
+# plot the histogram
+st.plotly_chart(fig)
 
-scatter_plot = px.scatter(df, x='odometer', y='price', title='Price vs Odometer', labels={'odometer': 'Odometer (Mileage)', 'price': 'Price (USD)'}, color='condition') # hover_data=['model', 'year']
-st.write("## Scatter Plot: Price vs Odometer")
-st.plotly_chart(scatter_plot)
+# histogram of price distribution between manufacturers
+st.subheader('Histogram of price distribution between manufacturers')
+# drop down menu for selecting the manufacturer 1 and 2 
+# index 1 and 2 are used to set default values for the drop down menu
+manufacturer1 = st.selectbox('Manufacturer 1', df['manufacturer'].unique(), index=1)
+manufacturer2 = st.selectbox('Manufacturer 2', df['manufacturer'].unique(), index=2)
+# create a normalized histogram checkbox
+normalized = st.checkbox('Normalized')
+# create a histogram with manufacturer1 and manufacturer2 input
+fig = px.histogram()
+fig.add_trace(go.Histogram(x=df[df['manufacturer'] == manufacturer1]['price'], name=manufacturer1, opacity=0.75, histnorm='percent'))
+fig.add_trace(go.Histogram(x=df[df['manufacturer'] == manufacturer2]['price'], name=manufacturer2, opacity=0.75, histnorm='percent'))
+# normalize the histogram if the checkbox is checked
+if normalized:
+    fig.update_layout(barmode='overlay')
+    fig.update_traces(opacity=0.75)
+# x-axis title
+fig.update_xaxes(title_text='Price')
+# y-axis title
+fig.update_yaxes(title_text='Percentage')
+# plot the histogram
+st.plotly_chart(fig)
 
-st.write(" The scatter plot shows the relationship between price and odometer. Points are colored by vehicle condition to provide more context on the condition of each vehicle. Additional information, such as model and year can be displayed by hovering over points")
+
+
+# scatter plot matrix 
+st.subheader('Scatter plot matrix')
+# drop down for each dimension 
+# index 1, 2, and 3 are used to set default values for the drop down menu
+x_axis = st.selectbox('X axis', df.columns, index=1)
+y_axis = st.selectbox('Y axis', df.columns, index=2)
+# drop down for the color
+color = st.selectbox('Color', df.columns, index=3)
+# subheader for the scatter plot matrix that automatically updates
+st.subheader(f'Scatter plot matrix of {x_axis} and {y_axis} by {color}')
+# create the scatter plot matrix
+fig = px.scatter_matrix(df, dimensions=[x_axis, y_axis], color=color)
+# plot the scatter plot matrix
+st.plotly_chart(fig)
