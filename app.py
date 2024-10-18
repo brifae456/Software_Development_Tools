@@ -6,19 +6,10 @@ import plotly.express as px
 df= pd.read_csv
 
 # cleaning up 'model_year' column
-# filling in the missing values in 'model_year' with a median
-median_model_year = df.groupby('model')['model_year'].median()
-
-def fill_missing_model_year(row):
-    if pd.isnull(row['model_year']):
-        return median_model_year[row['model']]
-    else:
-        return row['model_year']
-
-df['model_year'] = df.apply(fill_missing_model_year, axis=1)
-
-# Make sure the model years are in int values
-car_data['model_year'] = car_data['model_year'].astype(int)
+# filling in the missing values in 'model_year' with a median for a group based on 'model'
+df['model_year'] = df['model_year'].fillna(df.groupby(['model'])['model_year'].transform('median'))
+df['model_year'] = df['model_year'].astype(int)
+df['model_year'] = df['model_year'].astype(str)
 
 # cleaning up 'cylinders' column
 # filling in the missing values in 'cylinders' with a median for a group based on 'model'
