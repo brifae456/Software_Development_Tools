@@ -10,7 +10,7 @@ st.title('US Vehicle Advertisement Listings')
 
 
 # Read data from csv file vehicled_us_clean.csv
-df = pd.read_csv('./vehicles_us_cleaned.csv')
+df = pd.read_csv('cleaned_data.csv')
 
 # Show data in the app
 st.write(df)
