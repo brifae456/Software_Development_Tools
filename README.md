@@ -31,10 +31,7 @@ requirements.txt: Lists the dependencies required by the project.
 README.md: Explanation of project
 
 # Building Application
-Run through Streamlit application:
+The application runs through the Streamlit application:
+You would need to open the provided URL in your web browser.
 
-streamlit run app.py
-Open the provided URL (usually http://localhost:10000) in your web browser.
-
-Access the Application
 Can access the application with the following link https://car-advertisement-lists.onrender.com
